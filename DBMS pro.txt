@@ -1,0 +1,63 @@
+3program
+
+a. Select distinct p.pno from Prj p, Depts d, Emp e where e.dno=d.dno and d.dno = p.dno and (e.lname = 
+'scott' or d.mgrssn in (select ssn from Emp where lname='scott'));
+
+b. Select e.ssn , e.fname,e.lname, 1.1*e.salary as raisedsal from emp e , prj p, work w where p.pname = 
+'IOT' and p.pno = w.pno and e.ssn = w.ssn;
+
+c. Select sum(salary) as sumsal, avg(salary) as avgsal, min(salary) as minsal, max(salary) as maxsal from 
+Emp e, Depts d where e.dno = d.dno and d.dname='Accounts';
+
+d. select e.fname , e.lname from Emp e where not exists ((select pno from Prj where dno='5') minus (select 
+pno from WORK where e.ssn=ssn));
+
+e. select d.dno,d.dname,e.fname,e.lname ,count(*) as noofemp from Emp e, Depts d where e.dno=d.dno and 
+e.salary>600000 and d.dno in(select e1.dno from Emp e1 group by e1.dno having count(*)>5) group by 
+d.dno,d.dname,e.fname,e.lname;
+
+4program
+
+a. select Aname from AirCraft A, Employees E, Certified C where A.Aid = C.Aid and E.Eid = C.Eid and 
+E.Salary > 80000;
+
+b. select E.Eid, Max(CrusingRange) from Employees E, Certified C, AirCraft A where E.Eid=C.Eid and 
+A.Aid = C.Aid group by E.Eid having count(*) > 3;
+
+c. select A.Aname ,avg(Salary) from Employees E, Certified C , Aircraft A where C.Eid = E.Eid and A.Aid 
+= C.Aid and A.CrusingRange>1000 group by A.Aname;
+
+d. (select Ename from Employees E, Certified C where C.Aid in 
+( select A.Aid from Aircraft A, Certified C where A.Aid not in 
+( select Aid from Aircraft where Aname = 'boeing' or CrusingRange=3000)
+group by A.Aid
+) and E.Eid = C.Eid)
+Minus
+(select ename from Employees E, Certified C where C.Aid in ( 
+select A.Aid from Aircraft A, Certified C where A.Aid in 
+(select Aid from Aircraft where Aname = 'boeing')
+group by A.Aid) and E.Eid = C.Eid);
+
+e. select Eid, Ename, Salary from Employees where salary > (select avg(salary) from Employees) and Eid 
+not in ( select Eid from Certified);
+
+5progarm
+
+a. Select Distinct S.Snum, S.Sname from Student S,Class C, Enrolled E,Faculty F where S.Snum = 
+E.Snum and E.Cname = C.Cname and C.Fid = F.Fid and F.Fname = 'Rakesh' and S.Lev = 'JR' 
+order by Snum;
+
+b. Select MAX(S.age) as Age from Student S where (S.Major = 'History') OR S.Snum in (Select E.Snum 
+from Class C , Enrolled E, Faculty F where E.cname = C.cname and C.Fid = F.Fid and F.Fname = 
+'Ravi');
+
+c. Select Distinct S.Sname from Student S where S.Snum in (Select E1.Snum from Enrolled E1,Enrolled 
+E2, Class C1, Class C2 where E1.snum = E2.snum and E1.cname <> E2.cname and E1.cname = 
+C1.cname and E2.cname = C2.cname and C1.meets_at = C2.meets_at);
+
+d. Select Distinct F.Fname , count(*) as CourseCount from CLass C , Faculty F where C.FID not in 
+(Select Fid from Class where Room IN (Select Room from Class where Room!= 'R128')) AND C.Fid = 
+F.Fid group by F.Fname;
+
+
+e.select lev, avg(age) from student group by lev;
