@@ -1,0 +1,158 @@
+prg-1:
+ 1.         #include <stdio.h> 
+          #include <sys/types.h> 
+          #include <unistd.h> 
+          int main() {
+          fork();
+          printf("Hello world -> My PID is %d\n", getpid());
+          return 0;
+          }
+          2.#include <errno.h>      						//for error handling
+          #include <fcntl.h>       //file control options
+          #include <stdio.h> 
+          #include <unistd.h>   //POSIX operating system API.
+          
+          void main() 
+          { 
+              int fd, sz;    					 //file descripter, num of bytes read
+              char* c = (char*)calloc(100, sizeof(char)); 
+            
+              fd = open("/home/usr/foo.txt", O_RDONLY); 
+              if (fd < 0) { 
+                  perror("r1"); 
+                  exit(1); 
+              } 
+            
+              sz = read(fd, c, 10); 
+              printf("number of bytes=%d\n",sz); 
+              c[sz] = '\0'; 
+              printf("Those bytes are as follows: % s\n", c); 
+             
+          }
+
+
+
+prg-2:
+            #include <stdio.h> 
+            #include <stdlib.h> 
+            #include <unistd.h> 
+            #include <pthread.h> 
+            
+            // The function to be executed by threads 
+            void *myThreadFun1(void *vargp) 
+            { 
+            	printf("Thread 1\n");
+            } 
+            void *myThreadFun2(void *vargp) 
+            { 
+            	printf("Thread 2\n");
+            }
+            void *myThreadFun3(void *vargp) 
+            { 
+            	printf("Thread 3\n");
+            }
+            void  main() 
+            { 
+            	
+            	pthread_t tid; 
+                          pthread_t thread_id;
+                          printf("before thread creation\n");
+            	// create three threads 
+            	pthread_create(&tid, NULL, myThreadFun1, (void *)&tid); 
+            	pthread_create(&tid, NULL, myThreadFun2, (void *)&tid);
+            	pthread_create(&thread_id, NULL, myThreadFun3, (void *)&tid);
+            	pthread_join(thread_id, NULL); 
+                          printf("after thread\n");
+                          pthread_exit(NULL); 
+            	
+            } 
+            
+prg-3:
+        Process 1:
+        #include<stdio.h>
+        #include<stdlib.h>
+        #include<unistd.h>
+        #include<sys/shm.h>
+        #include<string.h>
+        int main()
+        {
+        int i;
+        void *shared_memory;
+        char buff[100];
+        int shmid;
+        shmid=shmget((key_t)2345, 1024, 066|IPC_CREAT); //creates shared memory segment //with key 2345, having size 1024 bytes. IPC_CREAT is used to create the shared segment if it //does not exist. 0666 are the permisions on the shared segment
+        printf("Key of shared memory is %d\n",shmid);
+        shared_memory=shmat(shmid,NULL,0); //process attached to shared memory segment
+        printf("Process attached at %p\n",shared_memory); //this prints the address where the //segment is attached with this process
+        printf("Enter some data to write to shared memory\n");
+        read(0,buff,100); //get some input from user
+        strcpy(shared_memory,buff); //data written to shared memory
+        }
+
+       Process 2:
+          #include<stdio.h>
+          #include<stdlib.h>
+          #include<unistd.h>
+          #include<sys/shm.h>
+          #include<string.h>
+          int main()
+          {
+          int i;
+          void *shared_memory;
+          char buff[100];
+          int shmid;
+          shmid=shmget((key_t)2345, 1024, 066|IPC_CREAT); 
+          printf("Key of shared memory is %d\n",shmid);
+          shared_memory=shmat(shmid,NULL,0); //process attached to shared memory segment
+          printf("Data read from shared memory is : %s\n",(char *)shared_memory);
+          }
+
+
+prg-4:
+4.	Develop a program in C to implement create and join operations on pthreads.
+                #include <stdio.h> 
+                #include <stdlib.h> 
+                #include <unistd.h> 
+                #include <pthread.h> 
+                
+                // Let us create a global variable to change it in threads 
+                int g = 0; 
+                
+                // The function to be executed by all threads 
+                void *myThreadFun(void *vargp) 
+                { 
+                	// Store the value argument passed to this thread 
+                	int *myid = (int *)vargp; 
+                
+                	// Let us create a static variable to observe its changes 
+                	static int s = 0; 
+                
+                	// Change static and global variables 
+                	++s; ++g; 
+                
+                	// Print the argument, static and global variables 
+                	printf("Thread ID: %d, Static: %d, Global: %d\n", *myid, ++s, ++g); 
+                } 
+                void *myThreadFun1(void *vargp)
+                {
+                    printf("Thread 4\n");
+                }
+                
+                int main() 
+                { 
+                	int i; 
+                	pthread_t tid,tid1; 
+                
+                	// Let us create three threads 
+                	for (i = 0; i < 3; i++) 
+                		pthread_create(&tid, NULL, myThreadFun, (void *)&tid); 
+                    pthread_create(&tid, NULL,myThreadFun1, (void *)&tid );
+                    pthread_join(tid, NULL);
+                    pthread_join(tid1, NULL);
+                    printf("Main thread continues\n");
+                    pthread_exit(NULL); 
+                    return 0; 
+                }
+
+
+
