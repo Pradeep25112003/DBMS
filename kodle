@@ -1,0 +1,326 @@
+// BellmanFord//
+
+import java.util.Scanner;
+public class BellmanFord
+{
+    private int D[];
+    private int num_ver;
+    public static final int MAX_VALUE = 999;
+    public BellmanFord(int num_ver)
+    {
+        this.num_ver = num_ver;
+        D = new int[num_ver + 1];
+    }
+    public void BellmanFordEvaluation(int source, int A[][])
+    {
+        for (int node = 1; node <= num_ver; node++)
+        {
+            D[node] = MAX_VALUE;
+        }
+        D[source] = 0;
+        for (int node = 1; node <= num_ver - 1; node++)
+        {
+            for (int sn = 1; sn <= num_ver; sn++)
+            {
+                for (int dn = 1; dn<= num_ver; dn++)
+                {
+                    if (A[sn][dn] != MAX_VALUE)
+                    {
+                        if (D[dn] > D[sn]+ A[sn][dn])
+                        {
+                            D[dn] = D[sn] + A[sn][dn];
+                        }
+                    }
+                }
+            }
+        }
+        for (int sn = 1; sn <= num_ver; sn++)
+        {
+            for (int dn = 1; dn <= num_ver; dn++)
+            {
+                if (A[sn][dn] != MAX_VALUE)
+                {
+                    if (D[dn] > D[sn]+ A[sn][dn])
+                    {
+                        System.out.println("The Graph contains negative egde cycle");
+                    }
+                }
+            }
+        }
+        for (int vertex = 1; vertex<= num_ver; vertex++)
+        {
+            System.out.println("distance of source" + source +  " to vertex "+ vertex + " is " + D[vertex]);
+        }
+    }
+    public static void main(String[ ] args)
+    {
+        int num_ver = 0; int source;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the number of vertices");
+        num_ver = scanner.nextInt();
+        int A[][] = new int[num_ver + 1][num_ver + 1];
+        System.out.println("Enter the adjacency matrix");
+        for (int sn = 1; sn <= num_ver; sn++)
+        {
+            for (int dn = 1; dn<= num_ver; dn++)
+            {
+                A[sn][dn] = scanner.nextInt();
+                if (sn == dn)
+                {
+                    A[sn][dn] = 0; continue;
+                }
+                if (A[sn][dn] == 0)
+                {
+                    A[sn][dn] = MAX_VALUE;
+                }
+            }
+        }
+        System.out.println("Enter the source vertex");
+        source = scanner.nextInt();
+        BellmanFord b = new BellmanFord (num_ver);
+        b.BellmanFordEvaluation(source, A);
+        scanner.close();
+    }
+}
+-------------------------------------------------------------------------------------------------------
+LEAKY BUCKET
+
+import java.io.*;
+import java.util.*;
+
+class Leakybucket {
+    public static void main(String[] args) {
+        int no_of_queries, storage, output_pkt_size;
+        int input_pkt_size, bucket_size, size_left;
+        storage = 0;
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the no of iterations\n");
+        no_of_queries = s.nextInt();
+
+        System.out.println("Enter bucket size\n");
+        bucket_size = s.nextInt();
+        
+        System.out.println("Enter flowrate\n");
+        input_pkt_size = s.nextInt();
+
+        // no. of packets that exits the bucket at a time
+        output_pkt_size = 1;
+
+        for (int i = 0; i < no_of_queries; i++) {
+            size_left = bucket_size - storage; // space left
+
+            if (input_pkt_size <= (size_left)) {
+                storage += input_pkt_size;
+            } else {
+                System.out.println("Packet loss = " + input_pkt_size);
+            }
+            
+            storage -= output_pkt_size;
+        }
+    }
+}
+
+
+
+OR
+
+
+
+package networks;
+import java.util.*;
+
+public class leaky {
+	public static void main(String args[])
+	{
+		Scanner s = new Scanner(System.in);
+		int bucketSize = 10;
+		int flowRate = 3, bucketContent = 0, packetSent = 0, packetDropped = 0;
+		
+		System.out.println("Enter the number of iterations : ");
+		int count = s.nextInt();
+		int dataBursts[] = new int[count];
+		
+		System.out.println("Enter the data bursts per iteration : ");
+		for(int i=0;i<count;i++)
+			dataBursts[i] = s.nextInt();
+		
+		int i = 0;
+		while(i<count)
+		{
+			bucketContent += dataBursts[i];
+			if(bucketContent > flowRate)
+				packetSent = flowRate;
+			else
+				packetSent = bucketContent;
+			
+			bucketContent -= packetSent;
+			if(bucketContent > bucketSize)
+			{
+				packetDropped = bucketContent - bucketSize;
+				bucketContent = bucketSize;
+			}
+			else
+			{
+				packetDropped = 0;
+			}
+			
+			System.out.println(++i + " : Bucket Content = " + bucketContent + ", Packet Sent = " + packetSent + ", Packets dropped  = " + packetDropped);
+			
+			
+		}
+	}
+}
+
+-------------------------------------------------------------------------------------------
+CLIENT AND SERVER
+
+// DServer
+
+import java.net.*;
+public class DServer
+{
+    public static void main(String args[]) throws Exception
+    {
+        byte buff[] = new byte[1024];
+        System.out.println("Receiver: ");
+        DatagramSocket ds = new DatagramSocket(3000);
+
+        while(true)
+        {
+            DatagramPacket dp = new DatagramPacket(buff, 1024);
+            ds.receive(dp);
+
+            String msg = new String(dp.getData(), 0, dp.getLength());
+            System.out.println(msg);
+        }
+    }
+}
+
+
+//DClient
+
+import java.util.Scanner;
+import java.net.*;
+public class DClient
+{
+    public static void main(String args[]) throws Exception
+    {
+        System.out.println("Sender: ");
+        DatagramSocket ds = new DatagramSocket();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the message: ");
+
+        while(true)
+        {
+            String msg = scanner.nextLine();
+            InetAddress ip = InetAddress.getByName("127.0.0.1");
+            DatagramPacket dp = new DatagramPacket(msg.getBytes(), msg.length(), ip, 3000);
+            ds.send(dp);
+        }
+    }
+}
+----------------------------------------------------------------------------------------------
+
+
+// CRC
+
+import java.util.Scanner;
+
+public class crc
+{
+    public static void main(String args[])
+    {
+        Scanner sc = new Scanner(System.in);
+
+        // Enter message bits
+        System.out.println("Enter message bits:");
+        String message = sc.nextLine();
+
+        // Enter divisor
+        System.out.print("Enter divisor:");
+        String generator = sc.nextLine();
+
+        // Convert message and divisor to integer arrays
+        int data[] = new int[message.length() + generator.length() - 1];
+        int divisor[] = new int[generator.length()];
+        for (int i = 0; i < message.length(); i++)
+        {
+            data[i] = Integer.parseInt(message.charAt(i) + "");
+        }
+        for (int i = 0; i < generator.length(); i++)
+        {
+            divisor[i] = Integer.parseInt(generator.charAt(i) + "");
+        }
+
+
+        // Calculation of CRC
+        for (int i = 0; i < message.length(); i++)
+        {
+            if (data[i] == 1)
+            {
+                for (int j = 0; j < divisor.length; j++) {
+                    data[i + j] ^= divisor[j];
+                }
+            }
+        }
+
+        // Display CRC
+        System.out.print("Codeword:");
+        for (int i = 0; i < message.length(); i++)
+        {
+            data[i] = Integer.parseInt(message.charAt(i) + "");
+        }
+        for (int i = 0; i < data.length; i++)
+        {
+            System.out.print(data[i]);
+        }
+        System.out.println();
+
+        // Check for input CRC code
+        System.out.print("Enter received codeword:");
+        message = sc.nextLine();
+        System.out.print("Enter divisor:");
+        generator = sc.nextLine();
+
+        // Convert received codeword and divisor to integer arrays
+        data = new int[message.length() + generator.length() - 1];
+        divisor = new int[generator.length()];
+        for (int i = 0; i < message.length(); i++)
+        {
+            data[i] = Integer.parseInt(message.charAt(i) + "");
+        }
+        for (int i = 0; i < generator.length(); i++)
+        {
+            divisor[i] = Integer.parseInt(generator.charAt(i) + "");
+        }
+
+        // Calculate the remainder
+        for (int i = 0; i < message.length(); i++)
+        {
+            if (data[i] == 1) {
+                for (int j = 0; j < divisor.length; j++) {
+                    data[i + j] ^= divisor[j];
+                }
+            }
+        }
+
+        // Display validity of data
+        boolean valid = true;
+        for (int i = 0; i < data.length; i++)
+        {
+            if (data[i] == 1) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (valid) {
+            System.out.println("Data stream is valid");
+        }
+        else {
+            System.out.println("Data stream invalid.!! CRC ERROR!!");
+        }
+    }
+}
+
